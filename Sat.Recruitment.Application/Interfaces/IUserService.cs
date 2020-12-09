@@ -1,10 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Sat.Recruitment.Application.ViewModels;
 
 namespace Sat.Recruitment.Application.Interfaces
 {
-	interface IUserService
+	public interface IUserService
 	{
+		public void CreateUser(UserViewModel userViewModel);
+
+		public UserViewModel GetUsers();
+
+		public bool UserDuplicated(UserViewModel userViewModel);
 	}
 }

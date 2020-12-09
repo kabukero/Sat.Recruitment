@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Sat.Recruitment.Domain.Models;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Sat.Recruitment.Domain.Interfaces
 {
-	interface IUserRepository
+	public interface IUserRepository
 	{
+		public void CreateUser(User user);
+
+		public IEnumerable<User> GetUsers();
 	}
 }
