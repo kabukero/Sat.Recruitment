@@ -3,24 +3,27 @@ using Sat.Recruitment.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Sat.Recruitment.Infrastructure.Data.Repositories
 {
 	public class UserRepository : IUserRepository
 	{
-		public void CreateUser(User user)
+		public async Task CreateUser(User user)
 		{
-			throw new NotImplementedException();
+			var writer = WriteUserToFile();
+
+			await writer.WriteLineAsync(string.Format("{0},{1},{2},{3},{4}", user.Email, user.Name, user.Address, user.Phone, user.UserType, user.Money));
 		}
 
-		public IEnumerable<User> GetUsers()
+		public async Task<IEnumerable<User>> GetUsers()
 		{
 			var users = new List<User>();
 			var reader = ReadUsersFromFile();
 
 			while(reader.Peek() >= 0)
 			{
-				var line = reader.ReadLineAsync().Result;
+				var line = await reader.ReadLineAsync();
 				var user = new User
 				{
 					Name = line.Split(',')[0].ToString(),
@@ -44,7 +47,19 @@ namespace Sat.Recruitment.Infrastructure.Data.Repositories
 			FileStream fileStream = new FileStream(path, FileMode.Open);
 
 			StreamReader reader = new StreamReader(fileStream);
+
 			return reader;
+		}
+
+		private StreamWriter WriteUserToFile()
+		{
+			var path = Directory.GetCurrentDirectory() + "/Files/Users.txt";
+
+			FileStream fileStream = new FileStream(path, FileMode.Append);
+
+			StreamWriter writer = new StreamWriter(fileStream);
+
+			return writer;
 		}
 	}
 }

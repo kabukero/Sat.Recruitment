@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Sat.Recruitment.Application.Exceptions;
 using Sat.Recruitment.Application.Interfaces;
-using Sat.Recruitment.Application.ViewModels;
 using Sat.Recruitment.Application.Models;
-using System;
-using System.Collections.Generic;
+using Sat.Recruitment.Application.ViewModels;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -15,6 +13,7 @@ namespace Sat.Recruitment.Api.Controllers
 	public partial class UsersController : ControllerBase
 	{
 		private readonly IUserService userService;
+
 		public UsersController(IUserService userService)
 		{
 			this.userService = userService;
@@ -25,91 +24,46 @@ namespace Sat.Recruitment.Api.Controllers
 		public async Task<Result> CreateUser(UserViewModel userViewModel)
 		{
 			var errors = "";
+			var result = new Result();
 
-			ValidateErrors(userViewModel.Name, userViewModel.Email, userViewModel.Address, userViewModel.Phone, ref errors);
+			ValidateErrors(userViewModel, ref errors);
 
 			if(errors != null && errors != "")
-				return new Result()
-				{
-					IsSuccess = false,
-					Errors = errors
-				};
-
-			UserViewModel currentUserViewModel = userService.GetUsers();
+			{
+				result.IsSuccess = false;
+				result.Errors = errors;
+			}
 
 			try
 			{
-				var isDuplicated = false;
-				//foreach(var user in _users)
-				//{
-				//	if(user.Email == newUser.Email
-				//		||
-				//		user.Phone == newUser.Phone)
-				//	{
-				//		isDuplicated = true;
-				//	}
-				//	else if(user.Name == newUser.Name)
-				//	{
-				//		if(user.Address == newUser.Address)
-				//		{
-				//			isDuplicated = true;
-				//			throw new Exception("User is duplicated");
-				//		}
-
-				//	}
-				//}
-
-				if(!isDuplicated)
-				{
-					Debug.WriteLine("User Created");
-
-					return new Result()
-					{
-						IsSuccess = true,
-						Errors = "User Created"
-					};
-				}
-				else
-				{
-					Debug.WriteLine("The user is duplicated");
-
-					return new Result()
-					{
-						IsSuccess = false,
-						Errors = "The user is duplicated"
-					};
-				}
+				await userService.CreateUser(userViewModel);
+				Debug.WriteLine("User Created");
+				result.IsSuccess = true;
+				result.Errors = "User Created";
 			}
-			catch
+			catch(UserServiceException ex)
 			{
 				Debug.WriteLine("The user is duplicated");
-				return new Result()
-				{
-					IsSuccess = false,
-					Errors = "The user is duplicated"
-				};
+				result.IsSuccess = false;
+				result.Errors = ex.Message;
 			}
 
-			return new Result()
-			{
-				IsSuccess = true,
-				Errors = "User Created"
-			};
+			return result;
 		}
 
 		//Validate errors
-		private void ValidateErrors(string name, string email, string address, string phone, ref string errors)
+		private void ValidateErrors(UserViewModel userViewModel, ref string errors)
 		{
-			if(name == null)
+			if(userViewModel.Name == null)
 				//Validate if Name is null
 				errors = "The name is required";
-			if(email == null)
+			if(userViewModel.Email == null)
 				//Validate if Email is null
 				errors = errors + " The email is required";
-			if(address == null)
+			if(userViewModel.Address == null)
 				//Validate if Address is null
 				errors = errors + " The address is required";
-			if(phone == null)
+			if(userViewModel.Phone == null)
 				//Validate if Phone is null
 				errors = errors + " The phone is required";
 		}

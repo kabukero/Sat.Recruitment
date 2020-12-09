@@ -1,13 +1,13 @@
 ﻿using Sat.Recruitment.Application.ViewModels;
+using System.Threading.Tasks;
 
 namespace Sat.Recruitment.Application.Interfaces
 {
 	public interface IUserService
 	{
-		public void CreateUser(UserViewModel userViewModel);
+		public Task CreateUser(UserViewModel userViewModel);
 
-		public UserViewModel GetUsers();
+		public Task<UserViewModel> GetUsers();
 
-		public bool UserDuplicated(UserViewModel userViewModel);
 	}
 }

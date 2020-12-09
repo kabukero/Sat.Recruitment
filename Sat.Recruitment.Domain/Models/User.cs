@@ -12,7 +12,7 @@
 		{
 			get
 			{
-				return 0; //UserMoneyCalculator.CalculateMoney(UserType, Money);
+				return UserMoneyCalculator.CalculateMoney(UserType, Money);
 			}
 		}
 	}

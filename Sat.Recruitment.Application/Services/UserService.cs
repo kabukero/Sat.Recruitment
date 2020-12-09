@@ -1,10 +1,10 @@
-﻿using Sat.Recruitment.Application.Interfaces;
-using Sat.Recruitment.Application.ViewModels;
-//using Sat.Recruitment.Domain.Interfaces;
+﻿using Sat.Recruitment.Application.Exceptions;
+using Sat.Recruitment.Application.Interfaces;
 using Sat.Recruitment.Application.Mappings;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Sat.Recruitment.Application.ViewModels;
+using Sat.Recruitment.Domain.Interfaces;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sat.Recruitment.Application.Services
 {
@@ -17,24 +17,25 @@ namespace Sat.Recruitment.Application.Services
 			this.userRepository = userRepository;
 		}
 
-		public void CreateUser(UserViewModel userViewModel)
+		public async Task CreateUser(UserViewModel userViewModel)
 		{
-			userRepository.CreateUser(UserMapper.ToUser(userViewModel));
+			if(await UserDuplicated(userViewModel))
+				throw new UserServiceException("The user is duplicated");
+			await userRepository.CreateUser(UserMapper.ToUser(userViewModel));
 		}
 
-		public UserViewModel GetUsers()
+		public async Task<UserViewModel> GetUsers()
 		{
 			return new UserViewModel()
 			{
-				Users = userRepository.GetUsers()
+				Users = await userRepository.GetUsers()
 			};
 		}
 
-		public bool UserDuplicated(UserViewModel userViewModel)
+		private async Task<bool> UserDuplicated(UserViewModel userViewModel)
 		{
-			var users = userRepository.GetUsers();
-
-			return true;
+			var users = await userRepository.GetUsers();
+			return users.Any(x => (x.Email == userViewModel.Email || x.Phone == userViewModel.Phone) || (x.Name == userViewModel.Name && x.Address == userViewModel.Address));
 		}
 	}
 }

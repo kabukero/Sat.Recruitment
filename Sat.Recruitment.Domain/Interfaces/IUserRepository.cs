@@ -1,12 +1,13 @@
 ﻿using Sat.Recruitment.Domain.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sat.Recruitment.Domain.Interfaces
 {
 	public interface IUserRepository
 	{
-		public void CreateUser(User user);
+		public Task CreateUser(User user);
 
-		public IEnumerable<User> GetUsers();
+		public Task<IEnumerable<User>> GetUsers();
 	}
 }
