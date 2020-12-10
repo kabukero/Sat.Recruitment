@@ -1,21 +1,28 @@
-﻿using Sat.Recruitment.Application.ViewModels;
+﻿using Sat.Recruitment.Application.Interfaces;
+using Sat.Recruitment.Application.ViewModels;
 using Sat.Recruitment.Domain.Models;
 
 namespace Sat.Recruitment.Application.Mappings
 {
-	public static class UserMapper
+	public class UserMapper : IUserMapper
 	{
-		public static User ToUser(UserViewModel userViewModel)
+		private readonly IUserFactory userFactory;
+
+		public UserMapper(IUserFactory userFactory)
 		{
-			return new User()
-			{
-				Name = userViewModel.Name,
-				Email = userViewModel.Email,
-				Address = userViewModel.Address,
-				Phone = userViewModel.Phone,
-				UserType = userViewModel.UserType,
-				Money = userViewModel.Money
-			};
+			this.userFactory = userFactory;
+		}
+
+		public User ToUser(UserViewModel userViewModel)
+		{
+			var user = userFactory.GetUser(userViewModel.UserType);
+			user.Name = userViewModel.Name;
+			user.Email = userViewModel.Email;
+			user.Address = userViewModel.Address;
+			user.Phone = userViewModel.Phone;
+			user.UserType = userViewModel.UserType;
+			user.Money = user.CalculateMoney();
+			return user;
 		}
 	}
 }

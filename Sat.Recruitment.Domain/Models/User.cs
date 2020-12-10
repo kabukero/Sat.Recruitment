@@ -1,6 +1,6 @@
 ﻿namespace Sat.Recruitment.Domain.Models
 {
-	public class User
+	public abstract class User
 	{
 		public string Name { get; set; }
 		public string Email { get; set; }
@@ -8,12 +8,19 @@
 		public string Phone { get; set; }
 		public string UserType { get; set; }
 		public decimal Money { get; set; }
-		public decimal MoneyWithGif
+
+		private decimal Percentage;
+
+		public User()
 		{
-			get
-			{
-				return UserMoneyCalculator.CalculateMoney(UserType, Money);
-			}
+			Percentage = GetPercentage();
 		}
+
+		public abstract decimal GetPercentage();
+
+		private decimal CalculateGif() => Money * Percentage;
+
+		public decimal CalculateMoney() => Money + CalculateGif();
+
 	}
 }

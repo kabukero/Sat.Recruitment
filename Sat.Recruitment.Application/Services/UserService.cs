@@ -1,6 +1,5 @@
 ﻿using Sat.Recruitment.Application.Exceptions;
 using Sat.Recruitment.Application.Interfaces;
-using Sat.Recruitment.Application.Mappings;
 using Sat.Recruitment.Application.ViewModels;
 using Sat.Recruitment.Domain.Interfaces;
 using System.Linq;
@@ -11,17 +10,19 @@ namespace Sat.Recruitment.Application.Services
 	public class UserService : IUserService
 	{
 		private readonly IUserRepository userRepository;
+		private readonly IUserMapper userMapper;
 
-		public UserService(IUserRepository userRepository)
+		public UserService(IUserRepository userRepository, IUserMapper userMapper)
 		{
 			this.userRepository = userRepository;
+			this.userMapper = userMapper;
 		}
 
 		public async Task CreateUser(UserViewModel userViewModel)
 		{
 			if(await UserDuplicated(userViewModel))
 				throw new UserServiceException("The user is duplicated");
-			await userRepository.CreateUser(UserMapper.ToUser(userViewModel));
+			await userRepository.CreateUser(userMapper.ToUser(userViewModel));
 		}
 
 		public async Task<UserViewModel> GetUsers()

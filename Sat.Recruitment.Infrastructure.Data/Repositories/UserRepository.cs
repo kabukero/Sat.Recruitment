@@ -1,6 +1,6 @@
-﻿using Sat.Recruitment.Domain.Interfaces;
+﻿using Sat.Recruitment.Application.Interfaces;
+using Sat.Recruitment.Domain.Interfaces;
 using Sat.Recruitment.Domain.Models;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,6 +9,13 @@ namespace Sat.Recruitment.Infrastructure.Data.Repositories
 {
 	public class UserRepository : IUserRepository
 	{
+		private readonly IUserFactory userFactory;
+
+		public UserRepository(IUserFactory userFactory)
+		{
+			this.userFactory = userFactory;
+		}
+
 		public async Task CreateUser(User user)
 		{
 			var writer = WriteUserToFile();
@@ -24,15 +31,13 @@ namespace Sat.Recruitment.Infrastructure.Data.Repositories
 			while(reader.Peek() >= 0)
 			{
 				var line = await reader.ReadLineAsync();
-				var user = new User
-				{
-					Name = line.Split(',')[0].ToString(),
-					Email = line.Split(',')[1].ToString(),
-					Phone = line.Split(',')[2].ToString(),
-					Address = line.Split(',')[3].ToString(),
-					UserType = line.Split(',')[4].ToString(),
-					Money = decimal.Parse(line.Split(',')[5].ToString()),
-				};
+				var user = userFactory.GetUser(line.Split(',')[4].ToString());
+				user.Name = line.Split(',')[0].ToString();
+				user.Email = line.Split(',')[1].ToString();
+				user.Phone = line.Split(',')[2].ToString();
+				user.Address = line.Split(',')[3].ToString();
+				user.UserType = line.Split(',')[4].ToString();
+				user.Money = decimal.Parse(line.Split(',')[5].ToString());
 				users.Add(user);
 			}
 			reader.Close();
@@ -42,7 +47,7 @@ namespace Sat.Recruitment.Infrastructure.Data.Repositories
 
 		private StreamReader ReadUsersFromFile()
 		{
-			var path = Directory.GetCurrentDirectory() + "/Files/Users.txt";
+			var path = GetCurrentDir();
 
 			FileStream fileStream = new FileStream(path, FileMode.Open);
 
@@ -53,13 +58,18 @@ namespace Sat.Recruitment.Infrastructure.Data.Repositories
 
 		private StreamWriter WriteUserToFile()
 		{
-			var path = Directory.GetCurrentDirectory() + "/Files/Users.txt";
+			var path = GetCurrentDir();
 
 			FileStream fileStream = new FileStream(path, FileMode.Append);
 
 			StreamWriter writer = new StreamWriter(fileStream);
 
 			return writer;
+		}
+
+		private string GetCurrentDir()
+		{
+			return Directory.GetCurrentDirectory() + "/Files/Users.txt";
 		}
 	}
 }

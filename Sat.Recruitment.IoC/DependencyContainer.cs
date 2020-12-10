@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Sat.Recruitment.Application.Interfaces;
+using Sat.Recruitment.Application.Mappings;
 using Sat.Recruitment.Application.Services;
 using Sat.Recruitment.Domain.Interfaces;
 using Sat.Recruitment.Infrastructure.Data.Repositories;
@@ -13,6 +14,8 @@ namespace Sat.Recruitment.IoC
 		{
 			//Sat.Recruitment.Application
 			services.AddScoped<IUserService, UserService>();
+			services.AddScoped<IUserFactory, UserFactory>();
+			services.AddScoped<IUserMapper, UserMapper>();
 
 			//Sat.Recruitment.Domain.Interfaces | Sat.Recruitment.Infra.Data.Repositories
 			services.AddScoped<IUserRepository, UserRepository>();
