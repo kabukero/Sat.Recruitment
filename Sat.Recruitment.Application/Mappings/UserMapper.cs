@@ -6,23 +6,17 @@ namespace Sat.Recruitment.Application.Mappings
 {
 	public class UserMapper : IUserMapper
 	{
-		private readonly IUserFactory userFactory;
+		private readonly IMoneyFactory moneyFactory;
 
-		public UserMapper(IUserFactory userFactory)
+		public UserMapper(IMoneyFactory moneyFactory)
 		{
-			this.userFactory = userFactory;
+			this.moneyFactory = moneyFactory;
 		}
 
 		public User ToUser(UserViewModel userViewModel)
 		{
-			var user = userFactory.GetUser(userViewModel.UserType);
-			user.Name = userViewModel.Name;
-			user.Email = userViewModel.Email;
-			user.Address = userViewModel.Address;
-			user.Phone = userViewModel.Phone;
-			user.UserType = userViewModel.UserType;
-			user.Money = user.CalculateMoney();
-			return user;
+			var moneyCalculator = moneyFactory.GetMoney(userViewModel.Money, userViewModel.UserType);
+			return new User(userViewModel.Name, userViewModel.Email, userViewModel.Address, userViewModel.Phone, userViewModel.UserType, userViewModel.Money, moneyCalculator);
 		}
 	}
 }

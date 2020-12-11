@@ -1,5 +1,4 @@
-﻿using Sat.Recruitment.Application.Interfaces;
-using Sat.Recruitment.Domain.Interfaces;
+﻿using Sat.Recruitment.Domain.Interfaces;
 using Sat.Recruitment.Domain.Models;
 using System.Collections.Generic;
 using System.IO;
@@ -9,13 +8,6 @@ namespace Sat.Recruitment.Infrastructure.Data.Repositories
 {
 	public class UserRepository : IUserRepository
 	{
-		private readonly IUserFactory userFactory;
-
-		public UserRepository(IUserFactory userFactory)
-		{
-			this.userFactory = userFactory;
-		}
-
 		public async Task CreateUser(User user)
 		{
 			var writer = WriteUserToFile();
@@ -31,14 +23,7 @@ namespace Sat.Recruitment.Infrastructure.Data.Repositories
 			while(reader.Peek() >= 0)
 			{
 				var line = await reader.ReadLineAsync();
-				var user = userFactory.GetUser(line.Split(',')[4].ToString());
-				user.Name = line.Split(',')[0].ToString();
-				user.Email = line.Split(',')[1].ToString();
-				user.Phone = line.Split(',')[2].ToString();
-				user.Address = line.Split(',')[3].ToString();
-				user.UserType = line.Split(',')[4].ToString();
-				user.Money = decimal.Parse(line.Split(',')[5].ToString());
-				users.Add(user);
+				users.Add(new User(line.Split(',')[0].ToString(), line.Split(',')[1].ToString(), line.Split(',')[2].ToString(), line.Split(',')[3].ToString(), line.Split(',')[4].ToString(), decimal.Parse(line.Split(',')[5].ToString())));
 			}
 			reader.Close();
 

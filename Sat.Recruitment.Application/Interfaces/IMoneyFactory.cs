@@ -2,8 +2,8 @@
 
 namespace Sat.Recruitment.Application.Interfaces
 {
-	public interface IUserFactory
+	public interface IMoneyFactory
 	{
-		User GetUser(string type);
+		MoneyCalculator GetMoney(decimal money, string type);
 	}
 }

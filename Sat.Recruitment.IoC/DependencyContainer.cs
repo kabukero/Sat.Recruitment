@@ -14,7 +14,7 @@ namespace Sat.Recruitment.IoC
 		{
 			//Sat.Recruitment.Application
 			services.AddScoped<IUserService, UserService>();
-			services.AddScoped<IUserFactory, UserFactory>();
+			services.AddScoped<IMoneyFactory, MoneyFactory>();
 			services.AddScoped<IUserMapper, UserMapper>();
 
 			//Sat.Recruitment.Domain.Interfaces | Sat.Recruitment.Infra.Data.Repositories
